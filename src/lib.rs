@@ -11,12 +11,12 @@ pub struct RustubeNode;
 
 #[methods]
 impl RustubeNode {
-    fn new(_owner: Node) -> Self {
+    fn new(_owner: Ref<HTTPRequest>) -> Self {
         RustubeNode
     }
 
     #[export]
-    async fn &_download_video(&self, #[base] owner: HTTPRequest, url : String) -> PoolArray<T>{
+    async fn &_download_video(&self, #[base] owner: Ref<HTTPRequest>, url : String) -> PoolArray<T>{
     //godot_print!("downloaded video to {:?}", );
     rustube::download_best_quality(&url).await.unwrap()
 
