@@ -3,6 +3,7 @@
 
 use rustube;
 use gdnative::export::OwnerArg;
+use gdnative::object::TRef;
 use gdnative::prelude::*;
 use gdnative::api::HTTPRequest;
 
@@ -10,30 +11,36 @@ use gdnative::api::HTTPRequest;
 #[inherit(HTTPRequest)]
 pub struct RustubeNode;
 
+
+
 #[methods]
 impl RustubeNode {
-    fn new(_owner: Ref<HTTPRequest>) -> Self {
+    fn new(_owner: TRef<HTTPRequest>) -> Self {
         RustubeNode
     }
 
     #[export]
-    async fn &_download_video(&self, #[base] owner: Ref<HTTPRequest>, url : String) -> PoolArray<T>{
+    fn _download_video(&self, #[base] owner: TRef<HTTPRequest>, url : String) -> PoolArray<T>{
     //godot_print!("downloaded video to {:?}", );
-    rustube::download_best_quality(&url).await.unwrap()
+    
+       async {
+        rustube::download_best_quality(&url).await.unwrap()
+       } 
 
     }
 
+
 }
 
-/* Traits */
 impl NativeClassMethods  for RustubeNode{
 
     fn nativeclass_register(_: &ClassBuilder<Self>) { todo!() }
 }
 
-impl  OwnerArg<'_, HTTPRequest, Shared> for gdnative::prelude::Ref<HTTPRequest>{
 
-}
+struct HttpRequestRef(Ref<HTTPRequest>);
+
+//impl<'a> OwnerArg<'a, HTTPRequest, Shared> for HttpRequestRef {}
 
 fn init(handle: InitHandle) {
     handle.add_class::<RustubeNode>();
