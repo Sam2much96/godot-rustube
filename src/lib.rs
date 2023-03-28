@@ -1,7 +1,6 @@
-// Rust GDNative implementation of this Godot tutorial:
-// https://docs.godotengine.org/en/stable/tutorials/plugins/editor/making_plugins.html#a-custom-node
-
 use rustube;
+use gdnative::tasks::Async;
+use gdnative::export::Varargs;
 use gdnative::object::TRef;
 use gdnative::prelude::*;
 use gdnative::api::HTTPRequest;
@@ -11,35 +10,39 @@ use gdnative::api::HTTPRequest;
 #[inherit(HTTPRequest)]
 pub struct RustubeNode;
 
-
-
 #[methods]
 impl RustubeNode {
     fn new(_owner: TRef<HTTPRequest>) -> Self {
         RustubeNode
     }
 
+    #[export]
     #[method]
-    async fn _download_video(&self, #[base] owner: TRef<'_, HTTPRequest>, url : String) -> PoolArray<T>{
-    //godot_print!("downloaded video to {:?}", );
-    
-       
-        rustube::download_best_quality(&url).await.unwrap()
-        
-
+    fn _download_video(&self, #[base] owner: TRef<'_, HTTPRequest>, url: String) -> Async<String> {
+        async move {
+            rustube::download_best_quality(&url)
+                .await
+                .unwrap()
+                .to_str()
+                .expect("Path to VideoFIle")
+                .to_string()
+        }
     }
 
-    /* Manually Register the Methods*/
     fn register(builder: &ClassBuilder<Self>) {
-    builder
-        .method("my_method", MyMethod)
-        .done();
+        builder.method("_download_video", Self::_download_video_async).done();
+    }
+
+    async fn _download_video_async(
+        &self,
+        owner: TRef<'_, HTTPRequest>,
+        args: Varargs<'_>,
+    ) -> Variant {
+        let url = args.get_string(0).unwrap();
+        let result = self._download_video(owner, url).await;
+        Variant::from_str(&result)
     }
 }
-
-struct HttpRequestRef(Ref<HTTPRequest>);
-
-//impl<'a> OwnerArg<'a, HTTPRequest, Shared> for HttpRequestRef {}
 
 fn init(handle: InitHandle) {
     handle.add_class::<RustubeNode>();
