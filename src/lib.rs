@@ -28,11 +28,7 @@ impl RustubeNode {
 
     }
 
-
-}
-
-impl NativeClassMethods  for RustubeNode{
-
+    /* Manually Register the Methods*/
     fn register(builder: &ClassBuilder<Self>) {
     builder.add_signal(Signal {
         name: "_download_video_completed",
