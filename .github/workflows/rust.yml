@@ -2,9 +2,9 @@ name: Linux CI
 
 on:
   push:
-    branches: [ TESTNET ]
+    branches: [ main ]
   pull_request:
-    branches: [ TESTNET ]
+    branches: [ main ]
     
 env:
   CARGO_TERM_COLOR: always
