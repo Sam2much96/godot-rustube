@@ -31,18 +31,11 @@ impl RustubeNode {
 
     /* Manually Register the Methods*/
     fn register(builder: &ClassBuilder<Self>) {
-    builder.add_signal(Signal {
-        name: "_download_video_completed",
-        args: &[SignalArgument {
-            name: "video_path",
-            default: Variant::new(),
-            export_info: ExportInfo::new(VariantType::String),
-        }],
-    });
-  }
+    builder
+        .method("my_method", MyMethod)
+        .done();
+    }
 }
-
-
 
 struct HttpRequestRef(Ref<HTTPRequest>);
 
