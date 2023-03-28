@@ -1,0 +1,15 @@
+[package]
+name = "native-plugin"
+version = "0.1.0"
+authors = ["The godot-rust developers"]
+edition = "2021"
+rust-version = "1.56"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+gdnative = { version = "0.11", features = ["async"] }
+rustube = {git="https://github.com/DzenanJupic/rustube", rev="34eaad5"}
