@@ -7,6 +7,7 @@ use gdnative::prelude::*;
 use gdnative::api::HTTPRequest;
 
 #[derive(NativeClass)]
+#[register_with(Self::register)]
 #[inherit(HTTPRequest)]
 pub struct RustubeNode;
 
