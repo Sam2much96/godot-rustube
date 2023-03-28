@@ -2,6 +2,7 @@
 // https://docs.godotengine.org/en/stable/tutorials/plugins/editor/making_plugins.html#a-custom-node
 
 use rustube;
+use gdnative::export::OwnerArg;
 use gdnative::prelude::*;
 use gdnative::api::HTTPRequest;
 
@@ -24,6 +25,15 @@ impl RustubeNode {
 
 }
 
+/* Traits */
+impl NativeClassMethods  for RustubeNode{
+
+    fn nativeclass_register(_: &ClassBuilder<Self>) { todo!() }
+}
+
+impl  OwnerArg<'_, HTTPRequest, Shared> for gdnative::prelude::Ref<HTTPRequest>{
+
+}
 
 fn init(handle: InitHandle) {
     handle.add_class::<RustubeNode>();
