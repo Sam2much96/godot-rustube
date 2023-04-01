@@ -9,19 +9,13 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "EditorPlugin",
-"class": "CustomNode",
+"base": "",
+"class": "RustubeNode",
 "language": "NativeScript",
-"path": "res://addons/my_custom_node/custom_node.gdns"
-}, {
-"base": "Button",
-"class": "MyButton",
-"language": "NativeScript",
-"path": "res://my_button.gdns"
+"path": "res://addons/godot-rustube/custom_node.gdns"
 } ]
 _global_script_class_icons={
-"CustomNode": "",
-"MyButton": ""
+"RustubeNode": ""
 }
 
 [application]
@@ -32,7 +26,7 @@ config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "my_custom_node" )
+enabled=PoolStringArray( "res://addons/godot-rustube/plugin.cfg" )
 
 [rendering]
 

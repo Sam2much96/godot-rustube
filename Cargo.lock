@@ -3,6 +3,14 @@
 version = 3
 
 [[package]]
+name = "RustubeNode"
+version = "0.0.1"
+dependencies = [
+ "gdnative",
+ "rustube",
+]
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -918,14 +926,6 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.45.0",
-]
-
-[[package]]
-name = "native-plugin"
-version = "0.1.0"
-dependencies = [
- "gdnative",
- "rustube",
 ]
 
 [[package]]

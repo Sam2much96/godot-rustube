@@ -1,18 +1,18 @@
-[entry]
-
-X11.64="res://../../target/debug/libnative_plugin.so"
-OSX.64="res://../../target/debug/libnative_plugin.dylib"
-Windows.64="res://../../target/debug/native_plugin.dll"
-
-[dependencies]
-
-X11.64=[  ]
-OSX.64=[  ]
-Windows.64=[  ]
-
 [general]
 
 singleton=false
 load_once=true
 symbol_prefix="godot_"
 reloadable=true
+
+[entry]
+
+OSX.64="res://../../target/debug/libnative_plugin.dylib"
+Windows.64="res://../../target/debug/native_plugin.dll"
+X11.64="res://target/x86_64-unknown-linux-gnu/release/libRustubeNode.so"
+
+[dependencies]
+
+OSX.64=[  ]
+Windows.64=[  ]
+X11.64=[  ]
