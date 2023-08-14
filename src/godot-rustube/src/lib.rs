@@ -21,25 +21,34 @@ impl RustubeNode {
         godot_print!("Testing Native Plugin");
         //RustubeNode::test()
     }
+    
+    /* Implement Lifetime Traits for Method*/
+    #[method]
+    async fn download(&self) -> bool {
+        let url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
+        let video = Video::new(url).unwrap();
 
-    #[method]  
-    async fn download(&self, url: String) {
-      //let video_url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
-      let video = Video::new(url).unwrap();
+        let stream = match video.stream().await {
+            Ok(stream) => stream,
+            Err(_) => return false, // Return false if getting the stream fails
+        };
 
-      let stream = video.stream().await.unwrap();
-
-      while let Some(chunk) = stream.chunk().await.unwrap() {
-        // Do what you want with chunks
-        godot_print!("{:#?}", chunk);
-      }
-
-      // Or direct download to path
-      let path = std::path::Path::new(r"test.mp3");
-
-      video.download(path).await.unwrap();
+        while let Some(chunk) = stream.chunk().await.unwrap() {
+            // Do what you want with chunks
+            godot_print!("{:#?}", chunk);
         }
+
+        // Or direct download to path
+        let path = std::path::Path::new(r"test.mp3");
+
+        if let Err(_) = video.download(path).await {
+            return false; // Return false if download fails
+        }
+
+        true // Return true if download and streaming were successful
     }
+}
+
 
 /*  Async Reciepe*/
 
