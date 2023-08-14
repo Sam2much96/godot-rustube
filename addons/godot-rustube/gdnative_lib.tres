@@ -1,7 +1,5 @@
 [gd_resource type="GDNativeLibrary" format=2]
 
 [resource]
-entry/Windows.64 = "res://addons/algodot/lib/algodot.dll"
-entry/X11.64 = "res://target/x86_64-unknown-linux-gnu/release/libdl.so"
-dependency/Windows.64 = [  ]
-dependency/X11.64 = [ "res://target/x86_64-unknown-linux-gnu/release/libdl.so.2" ]
+entry/X11.64 = "res://target/release/libRustubeNode.so"
+dependency/X11.64 = [  ]

@@ -1,0 +1,12 @@
+[package]
+name = "godot-rustube"
+version = "0.0.1"
+authors = ["Samuel O. Harrison"]
+edition = "2021"
+description = "A Godot Node for rustube"
+
+
+[dependencies]
+
+rustube = {path = "../rustube"}
+gdnative = { git = "https://github.com/godot-rust/gdnative",  version = "0.11", default-features = true, branch = "master" }
