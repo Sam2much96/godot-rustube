@@ -1,6 +1,7 @@
 use gdnative::prelude::*;
-//use gdnative::tasks;
-use rustube::{Id, VideoFetcher};
+use rusty_ytdl::*;
+//use gdnative::tasks::Async;
+
 
 #[allow(non_camel_case_types)]
 #[derive(NativeClass)]
@@ -8,6 +9,7 @@ use rustube::{Id, VideoFetcher};
 pub struct RustubeNode;
 
 //pub trait Method<RustubeNode> {}
+/* Rust YTDL compiles without dependencies */
 #[methods]
 impl RustubeNode {
     fn new(_base: &Node) -> Self {
@@ -20,58 +22,102 @@ impl RustubeNode {
         //RustubeNode::test()
     }
 
-    /*
+    #[method]  
+    async fn download(&self, url: String) {
+      //let video_url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
+      let video = Video::new(url).unwrap();
 
-    #[method]
-    async fn main() {
-        let mut url  : String = "https://youtube.com/shorts/YCwou4oX12I?feature=share";
-        godot_print!(
-            "downloaded video to {:?}",
-            rustube::download_best_quality(&url).await.unwrap()
-        );
+      let stream = video.stream().await.unwrap();
+
+      while let Some(chunk) = stream.chunk().await.unwrap() {
+        // Do what you want with chunks
+        godot_print!("{:#?}", chunk);
+      }
+
+      // Or direct download to path
+      let path = std::path::Path::new(r"test.mp3");
+
+      video.download(path).await.unwrap();
+        }
     }
 
-    #[method]
-    async fn test() {
-        let mut id = Id::from_raw("https://youtube.com/shorts/YCwou4oX12I?feature=share").unwrap();
-        let mut descrambler = VideoFetcher::from_id(id.into_owned())
-            .unwrap()
-            .fetch()
-            .await
-            .unwrap();
+/*  Async Reciepe*/
 
-        let mut view_count = descrambler.video_details().view_count;
-        let mut title = descrambler.video_title();
-        println!("The video `{}` was viewed {} times.", title, view_count);
-    }
-    /*
-
-    fn register(builder: &ClassBuilder<Self>) {
-        /* Registers the Method*/
-        builder.method(stringify(Self::_download_video), Self::_download_video_async).done();
-    }
-
-
-    async fn _download_video_async(
-        &self,
-        owner: TRef<'_, HTTPRequest>,
-        args: Varargs<'_>,
-    ) -> Variant {
-        let url = args.get_string(0).unwrap();
-        let result = self._download_video(owner, url).await;
-        Variant::from_str(&result)
-    }
-
-    */
-    */
+thread_local! {
+    static EXECUTOR: &'static SharedLocalPool = {
+        Box::leak(Box::new(SharedLocalPool::default()))
+    };
 }
-/* No Valid Init Library */
+
+use tokio::task::LocalSet;
+
+#[derive(Default)]
+struct SharedLocalPool {
+    local_set: LocalSet,
+}
+
+impl futures::task::LocalSpawn for SharedLocalPool {
+    fn spawn_local_obj(
+        &self,
+        future: futures::task::LocalFutureObj<'static, ()>,
+    ) -> Result<(), futures::task::SpawnError> {
+        self.local_set.spawn_local(future);
+
+        Ok(())
+    }
+}
+
+
+use tokio::runtime::{Builder, Runtime};
+
+#[derive(NativeClass)]
+#[inherit(Node)]
+struct AsyncExecutorDriver {
+    runtime: Runtime,
+}
+
+impl AsyncExecutorDriver {
+    fn new(_base: &Node) -> Self {
+        AsyncExecutorDriver {
+            runtime: Builder::new_current_thread()
+                .enable_io()    // optional, depending on your needs
+                .enable_time()  // optional, depending on your needs
+                .build()
+                .unwrap(),
+        }
+    }
+}
+
+#[methods]
+impl AsyncExecutorDriver {
+    #[method]
+    fn _process(&self, #[base] _base: &Node, _delta: f64) {
+        EXECUTOR.with(|e| {
+            self.runtime
+                .block_on(async {
+                    e.local_set
+                        .run_until(async {
+                            tokio::task::spawn_local(async {}).await
+                        })
+                        .await
+                })
+                .unwrap()
+        })
+    }
+}
+
+
 
 #[gdnative::init::callbacks]
 impl GDNativeCallbacks for RustubeNode {
      fn nativescript_init(handle: InitHandle) {
-        handle.add_class::<RustubeNode>();
+    
+        handle.add_class::<RustubeNode>();    
+        
+        gdnative::tasks::register_runtime(&handle);
+        gdnative::tasks::set_executor(EXECUTOR.with(|e| *e));
+        handle.add_class::<AsyncExecutorDriver>();
     }
 
 }
-//godot_init!(init);
+

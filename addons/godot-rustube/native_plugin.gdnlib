@@ -7,8 +7,8 @@ reloadable=true
 
 [entry]
 
-X11.64="res://target/release/libRustubeNode.so"
+X11.64="res://target/debug/libRustubeNode.so"
 
 [dependencies]
 
-X11.64=[  ]
+X11.64=[ "res://addons/godot-rustube/openssl-deps/libdl.so" ]

@@ -6,7 +6,12 @@ edition = "2021"
 description = "A Godot Node for rustube"
 
 
-[dependencies]
+[lib]
+crate-type = ["cdylib"]
 
-rustube = {path = "../rustube"}
-gdnative = { git = "https://github.com/godot-rust/gdnative",  version = "0.11", default-features = true, branch = "master" }
+
+[dependencies]
+tokio = { version = "1.10", features = ["rt"] }
+futures = "0.3"
+rusty_ytdl = {git ="https://github.com/Mithronn/rusty_ytdl", rev= "b2561a3"}
+gdnative = { git = "https://github.com/godot-rust/gdnative",  version = "0.11", features = ["async"], branch = "master" }
