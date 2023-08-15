@@ -1,7 +1,8 @@
 [workspace]
 
 members = [
-    "godot-rustube"
+    "godot-rustube",
+    "macros"
 ]
 
 

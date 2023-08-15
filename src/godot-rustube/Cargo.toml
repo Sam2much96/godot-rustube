@@ -15,3 +15,4 @@ tokio = { version = "1.10", features = ["rt"] }
 futures = "0.3"
 rusty_ytdl = {git ="https://github.com/Mithronn/rusty_ytdl", rev= "b2561a3"}
 gdnative = { git = "https://github.com/godot-rust/gdnative",  version = "0.11", features = ["async"], branch = "master" }
+macros = { path = "../macros" }

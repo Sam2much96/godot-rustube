@@ -2,11 +2,32 @@ use gdnative::prelude::*;
 use rusty_ytdl::*;
 //use gdnative::tasks::Async;
 
+//simplifies async methods with custom macros
+use macros::*;
+use std::rc::Rc;
+use gdnative::tasks::{Async, AsyncMethod, Spawner};
+use gdnative::tasks::Yield;
+
+// Futures Trait
+use futures::Future as future;
+use futures::task::Poll;
+use std::pin::Pin;
+
+//GDNative VideoStream Class
+use gdnative::api::VideoStream;
+
+//Required Deps
+use futures::task::Context;
 
 #[allow(non_camel_case_types)]
 #[derive(NativeClass)]
 #[inherit(Node)]
-pub struct RustubeNode;
+
+/*Define the Struct*/
+pub struct RustubeNode{
+    pub name: Rc<String>, //required for the custom async macro implementation
+    pub stream : Option<VideoStream>
+}
 
 //pub trait Method<RustubeNode> {}
 /* Rust YTDL compiles without dependencies */
@@ -14,7 +35,10 @@ pub struct RustubeNode;
 impl RustubeNode {
     fn new(_base: &Node) -> Self {
         godot_print!("Initializing Rustube");
-        RustubeNode{}
+        RustubeNode{
+            //placeholder accounts for algod node requirement in custom macro
+            algod: Rc::new(String::new()) 
+        }
     }
 
     fn _ready(&self, _base: &Node) {
@@ -22,35 +46,67 @@ impl RustubeNode {
         //RustubeNode::test()
     }
     
-    /* Implement Lifetime Traits for Method*/
-    #[method]
-    async fn download(&self) -> bool {
-        let url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
-        let video = Video::new(url).unwrap();
+    /* Async Modve Original PR: https://github.com/godot-rust/gdnative/pull/709*/
+    //#[method]
+    //#[method(async)]
+       
+   
 
-        let stream = match video.stream().await {
-            Ok(stream) => stream,
-            Err(_) => return false, // Return false if getting the stream fails
-        };
-
-        while let Some(chunk) = stream.chunk().await.unwrap() {
-            // Do what you want with chunks
-            godot_print!("{:#?}", chunk);
-        }
-
-        // Or direct download to path
-        let path = std::path::Path::new(r"test.mp3");
-
-        if let Err(_) = video.download(path).await {
-            return false; // Return false if download fails
-        }
-
-        true // Return true if download and streaming were successful
     }
+
+
+/*Futures Trait for Download Method */
+
+trait MyTrait {
+
+    type Output = VideoStream;
+    
 }
 
+/* It Implements GDNative Futures Trait && Rust Futures Trait*/
+impl <T : MyTrait> future for RustubeNode {
+    
 
-/*  Async Reciepe*/
+    fn download()-> VideoStream{
+        todo!()
+    }
+
+    
+    // Required method
+    fn poll(
+    self: Pin<&mut Yield<T>>,
+    cx: &mut Context<'_>
+    ) -> Poll<<Yield<T> as future>::Output>{
+        todo!()
+
+    }
+
+}
+
+asyncmethods!(name, node, this,
+    fn download(_ctx, _args)  {
+      let download = async move {
+          let url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
+          let video = Video::new(url).unwrap();
+
+          let stream = video.stream().await.unwrap();
+
+          while let Some(chunk) = stream.chunk().await.unwrap() {
+            // Do what you want with chunks
+            godot_print!("{:#?}", chunk);
+          }
+
+          // Or direct download to path
+          let path = std::path::Path::new(r"test.mp3");
+
+          video.download(path).await.unwrap();
+        //Ok(())
+        };
+    
+    }    
+);
+
+/*  Async Reciepe 1*/
 
 thread_local! {
     static EXECUTOR: &'static SharedLocalPool = {
@@ -116,6 +172,15 @@ impl AsyncExecutorDriver {
 }
 
 
+/*
+/* Async Recepie Original PR */
+fn register_methods(builder: &ClassBuilder<RustubeNode>) {
+    builder
+        .build_method("download", Async::new(RustubeNode))
+        .done();
+}
+*/
+
 
 #[gdnative::init::callbacks]
 impl GDNativeCallbacks for RustubeNode {
@@ -125,6 +190,7 @@ impl GDNativeCallbacks for RustubeNode {
         
         gdnative::tasks::register_runtime(&handle);
         gdnative::tasks::set_executor(EXECUTOR.with(|e| *e));
+        
         handle.add_class::<AsyncExecutorDriver>();
     }
 
