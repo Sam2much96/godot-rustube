@@ -13,11 +13,14 @@ use futures::Future as future;
 use futures::task::Poll;
 use std::pin::Pin;
 
+//GDNative Futures
+use gdnative::tasks::Context as gdnativeContext;
+
 //GDNative VideoStream Class
 use gdnative::api::VideoStream;
 
 //Required Deps
-use futures::task::Context;
+use futures::task::Context as futuresContext;
 
 #[allow(non_camel_case_types)]
 #[derive(NativeClass)]
@@ -37,52 +40,46 @@ impl RustubeNode {
         godot_print!("Initializing Rustube");
         RustubeNode{
             //placeholder accounts for algod node requirement in custom macro
-            algod: Rc::new(String::new()) 
+            name: Rc::new(String::new()), 
+            stream : None
         }
     }
 
     fn _ready(&self, _base: &Node) {
         godot_print!("Testing Native Plugin");
-        //RustubeNode::test()
     }
     
     /* Async Modve Original PR: https://github.com/godot-rust/gdnative/pull/709*/
-    //#[method]
-    //#[method(async)]
-       
    
 
     }
 
 
-/*Futures Trait for Download Method */
-
+/*Defines Futures Trait for Download Method */
+#[allow(non_camel_case_types)]
+/* Defines the trait for asynchronous operations */
 trait MyTrait {
+    type VideoStream;
+    type Future: future<Output = Self::VideoStream>; // Use associated type for Future
+    // Remove unnecessary associated types
 
-    type Output = VideoStream;
-    
+    fn download(&self) -> Self::Future; // Use associated type for Future
 }
 
-/* It Implements GDNative Futures Trait && Rust Futures Trait*/
-impl <T : MyTrait> future for RustubeNode {
-    
+/* Implements the trait for RustubeNode */
+impl MyTrait for RustubeNode {
+    type VideoStream = VideoStream; // Assuming VideoStream is your actual type
+    type Future = Pin<Box<dyn future<Output = Self::VideoStream>>>; // Implement Future type
 
-    fn download()-> VideoStream{
-        todo!()
+    fn download(&self) -> Self::Future {
+        Box::pin(async move {
+            // Implement your async download logic here
+            todo!()
+        })
     }
-
-    
-    // Required method
-    fn poll(
-    self: Pin<&mut Yield<T>>,
-    cx: &mut Context<'_>
-    ) -> Poll<<Yield<T> as future>::Output>{
-        todo!()
-
-    }
-
 }
 
+/*
 asyncmethods!(name, node, this,
     fn download(_ctx, _args)  {
       let download = async move {
@@ -104,7 +101,8 @@ asyncmethods!(name, node, this,
         };
     
     }    
-);
+); 
+*/
 
 /*  Async Reciepe 1*/
 
