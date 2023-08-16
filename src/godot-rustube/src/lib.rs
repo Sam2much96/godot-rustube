@@ -33,7 +33,7 @@ use gdnative::api::VideoStreamTheora;
 
 /*Define the Struct*/
 pub struct RustubeNode {
-    pub name: Rc<String>, //required for the custom async macro implementation
+    pub name: Rc<String>, // Introduce a Reference Counter for Rustube Node //required for the custom async macro implementation
     pub stream: Option<VideoStreamTheora>,
 }
 
@@ -44,8 +44,11 @@ impl RustubeNode {
     fn new(_base: &Node) -> Self {
         godot_print!("Initializing Rustube");
         RustubeNode {
+            //Video Download Name
+
+
             //placeholder accounts for algod node requirement in custom macro
-            name: Rc::new(String::new()),
+            name: Rc::new(String::from("Hello, Rustube!")),
             stream: None,
         }
     }
@@ -54,7 +57,21 @@ impl RustubeNode {
         godot_print!("Testing Native Plugin");
     }
 
+    //fn _process(&self, _base: &Node){
+    //    Self::download();
+    //}
+
+    #[method]
+    fn test(&self, #[base] _base: &Node){
+        Self::download();
+      }
+
+     //   godot_print!("Running Test");
+    //    //Self::download(&Self{ name : rc_string, stream : None});
+    //    godot_print!("Test Successfull");
+    //}
     /* Async Modve Original PR: https://github.com/godot-rust/gdnative/pull/709*/
+
 }
 
 /*Defines Futures Trait for Download Method */
@@ -65,18 +82,20 @@ trait MyTrait {
     type Future: future<Output = Self::VideoStream>; // Use associated type for Future
                                                      // Remove unnecessary associated types
 
-    fn download(&self) -> Self::VideoStream; // Use associated type for Future
+    fn download() -> Self::VideoStream; // Use associated type for Future
 }
 
 
 /* Implement trait bound `VideoStream: From<rusty_ytdl::Video> */
 
 /* Implements the trait for RustubeNode */
+/* Implement Lifetime */
 impl MyTrait for RustubeNode {
     type VideoStream = String; // Assuming VideoStream is your actual type
     type Future = Pin<Box<dyn future<Output = Self::VideoStream>>>; // Implement Future type
 
-    fn download(&self) -> Self::VideoStream {
+
+    fn download() -> Self::VideoStream {
         
         let t = String::new();
         let _ =Box::pin(async move {
@@ -84,6 +103,9 @@ impl MyTrait for RustubeNode {
             //todo!()
                         /* Download Video Async Logic */
             let video_url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
+
+            godot_print!("Video Url: ", &video_url);
+
             let video = Video::new(video_url).unwrap();
 
             let stream = video.stream().await.unwrap();
