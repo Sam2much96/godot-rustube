@@ -104,7 +104,7 @@ impl MyTrait for RustubeNode {
                         /* Download Video Async Logic */
             let video_url = "https://www.youtube.com/watch?v=FZ8BxMU3BYc"; // FZ8BxMU3BYc works too!
 
-            godot_print!("Video Url: ", &video_url);
+            godot_print!("Video Url: {}",&video_url);
 
             let video = Video::new(video_url).unwrap();
 
