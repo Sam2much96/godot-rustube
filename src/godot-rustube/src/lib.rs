@@ -69,8 +69,13 @@ impl RustubeNode {
 
 /*Defines Futures Trait for Download Method */
 // 
-// Bug : Download Method Breaks the Codebase Init
-//
+// Bug : 
+//      (1) Download Method Breaks the Codebase Init
+//      (2) Codebase duplicates Two Async Methods. Document and Implement Both 
+//      (3) No method in Rustube.gd to Consume the Downloaded File
+//      (4) No From or Into Variant Trait for Rustube for Strings and VideoStreams
+//      (5) Download Doesn't Receive the Url
+//      (6) No Documentation
 //
 #[allow(non_camel_case_types)]
 /* Defines the trait for asynchronous operations */
