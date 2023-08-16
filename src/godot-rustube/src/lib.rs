@@ -3,29 +3,29 @@ use rusty_ytdl::*;
 //use gdnative::tasks::Async;
 
 //simplifies async methods with custom macros
-use gdnative::tasks::Yield;
-use gdnative::tasks::{Async, AsyncMethod, Spawner};
-use macros::*;
+//use gdnative::tasks::Yield;
+//use gdnative::tasks::{Async, AsyncMethod, Spawner};
+//use macros::*;
 use std::rc::Rc;
 
 // Futures Trait
-use futures::task::Poll;
+//use futures::task::Poll;
 use futures::Future as future;
 use std::pin::Pin;
 
 //GDNative Futures
-use gdnative::tasks::Context as gdnativeContext;
+//use gdnative::tasks::Context as gdnativeContext;
 
 //GDNative VideoStream Class
-use gdnative::api::VideoStream;
-use gdnative::api::VideoStreamWebm;
+//use gdnative::api::VideoStream;
+//use gdnative::api::VideoStreamWebm;
 use gdnative::api::VideoStreamTheora;
-use gdnative::api::VideoPlayer;
+//use gdnative::api::VideoPlayer;
 
 
 //Required Deps
-use futures::task::Context as futuresContext;
-use std::ops::Deref;
+//use futures::task::Context as futuresContext;
+//use std::ops::Deref;
 
 #[allow(non_camel_case_types)]
 #[derive(NativeClass)]
@@ -90,7 +90,7 @@ impl MyTrait for RustubeNode {
 
             while let Some(chunk) = stream.chunk().await.unwrap() {
                 // Do what you want with chunks
-                println!("{:#?}", chunk);
+                godot_print!("{:#?}", chunk);
             }
 
             // Or direct download to path

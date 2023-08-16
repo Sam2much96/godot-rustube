@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export C_INCLUDE_PATH="/home/samuel/glibc-2.31"
+export C_INCLUDE_PATH="/usr/include/x86_64-linux-gnu"
 
 #export OPENSSL="build_openssl_android_clang/openssl-1.1.1l"
 

@@ -11,6 +11,7 @@ env:
   RUST_BACKTRACE: 1
   CARGO_INCREMENTAL: 0
   OPENSSL_VERSION: openssl-1.1.1l
+  C_INCLUDE_PATH: "/usr/include/x86_64-linux-gnu"
   
   
 jobs:
@@ -45,27 +46,18 @@ jobs:
         with:
           command: check
 
-      - name: "Compile & install Openssl 1.1l"
-        run: |
-          sudo apt install make gcc -y
-          wget  "https://www.openssl.org/source/${OPENSSL_VERSION}.tar.gz"
-          tar -xzvf ${OPENSSL_VERSION}.tar.gz
-          
-          cd ${OPENSSL_VERSION}
-          ./config --prefix=/opt/openssl --openssldir=/usr/local/ssl
-          make
-          sudo make install
              
       - name: "Linux compile"
         run: |
           # Linux
           
-           export OPENSSL=${{ github.workspace }}/${OPENSSL_VERSION}
-           export OPENSSL_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
-           export OPENSSL_LIB_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
+           # export OPENSSL=${{ github.workspace }}/${OPENSSL_VERSION}
+           # export OPENSSL_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
+           # export OPENSSL_LIB_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
            
-           export X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
+           # export X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR=${{ github.workspace }}/${OPENSSL_VERSION}
            
+           export C_INCLUDE_PATH=${C_INCLUDE_PATH}
           
            RUST_BACKTRSCE=full cargo build --target x86_64-unknown-linux-gnu  --release
    
