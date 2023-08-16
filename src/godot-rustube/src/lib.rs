@@ -57,24 +57,21 @@ impl RustubeNode {
         godot_print!("Testing Native Plugin");
     }
 
-    //fn _process(&self, _base: &Node){
+    /* Method Compiles But Breaks Library Init*/
+    //#[method]
+    //fn test(&self, #[base] _base: &Node){
     //    Self::download();
-    //}
+    //  }
 
-    #[method]
-    fn test(&self, #[base] _base: &Node){
-        Self::download();
-      }
-
-     //   godot_print!("Running Test");
-    //    //Self::download(&Self{ name : rc_string, stream : None});
-    //    godot_print!("Test Successfull");
-    //}
     /* Async Modve Original PR: https://github.com/godot-rust/gdnative/pull/709*/
 
 }
 
 /*Defines Futures Trait for Download Method */
+// 
+// Bug : Download Method Breaks the Codebase Init
+//
+//
 #[allow(non_camel_case_types)]
 /* Defines the trait for asynchronous operations */
 trait MyTrait {
